@@ -7,6 +7,7 @@ from collections import OrderedDict
 from typing import List, Dict
 from tqdm import tqdm
 
+
 class KerasTokenizer():
     """
     A simple high-level wrapper for the Keras tokenizer.
@@ -39,16 +40,14 @@ class KerasTokenizer():
 
     def build_vocab(self, data, **kwargs):
         print('Fitting tokenizer...')
-        self.tokenizer = tf.keras.layers.TextVectorization(
-            **self.tokenizer_args)
-        self.tokenizer.adapt(data)
-        # self.tokenizer = tf.keras.preprocessing.text.Tokenizer(**self.tokenizer_args)
-        # self.tokenizer.fit_on_texts(data)
+        # self.tokenizer = tf.keras.layers.TextVectorization(**self.tokenizer_args)
+        # self.tokenizer.adapt(data)
+        self.tokenizer = tf.keras.preprocessing.text.Tokenizer(**self.tokenizer_args)
+        self.tokenizer.fit_on_texts(data)
         print('Fit completed!')
 
-        # self.vocab = self.tokenizer.word_index
-        self.vocab = {key: i for i, key in enumerate(
-            self.tokenizer.get_vocabulary())}
+        self.vocab = self.tokenizer.word_index
+        # self.vocab = {key: i for i, key in enumerate(self.tokenizer.get_vocabulary())}
 
         if self.build_embedding_matrix:
             if self.load_embedding:
@@ -182,3 +181,35 @@ def build_embedding_matrix(embedding_model: gensim.models.keyedvectors.KeyedVect
         embedding_matrix[idx] = embedding_vector
 
     return embedding_matrix
+
+
+def convert_text(texts, tokenizer, is_training=False, max_seq_length=None):
+    """
+    Converts input text sequences using a given tokenizer
+
+    :param texts: either a list or numpy ndarray of strings
+    :tokenizer: an instantiated tokenizer
+    :is_training: whether input texts are from the training split or not
+    :max_seq_length: the max token sequence previously computed with
+    training texts.
+
+    :return
+        text_ids: a nested list on token indices
+        max_seq_length: the max token sequence previously computed with
+        training texts.
+    """
+    text_ids = tokenizer.convert_tokens_to_ids(texts)
+
+    # Padding
+    if is_training:
+        max_seq_length = int(np.quantile([len(seq) for seq in text_ids], 0.99))
+    else:
+        assert max_seq_length is not None
+
+    text_ids = [seq + [0] * (max_seq_length - len(seq)) for seq in text_ids]
+    text_ids = np.array([seq[:max_seq_length] for seq in text_ids])
+
+    if is_training:
+        return text_ids, max_seq_length
+    else:
+        return text_ids
