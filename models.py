@@ -1,54 +1,38 @@
 import tensorflow as tf
+from keras.models import Model
+from keras.layers import Input
 from keras.layers import Dense, Bidirectional, LSTM, GRU
 
 
-class BaselineLSTM(tf.keras.Model):
-    def __init__(self, num_classes=45):
-        super().__init__()
-        self.lstm = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))
-        self.dense = Dense(units=num_classes, activation=tf.nn.softmax)
+def baselineLSTM(input_shape=(200, 50), num_classes=45):
+    inputs = Input(input_shape)
+    x = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))(inputs)
+    x = Dense(units=num_classes, activation=tf.nn.softmax)(x)
 
-    def call(self, inputs):
-        x = self.lstm(inputs)
-        x = self.dense(x)
-        return x
+    return Model(inputs, x)
 
 
-class AdditionalLSTM(tf.keras.Model):
-    def __init__(self, num_classes=45):
-        super().__init__()
-        self.lstm1 = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))
-        self.lstm2 = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))
-        self.dense = Dense(units=num_classes, activation=tf.nn.softmax)
+def GRUModel(input_shape=(200, 50), num_classes=45):
+    inputs = Input(input_shape)
+    x = GRU(units=64, activation='relu', return_sequences=True)(inputs)
+    x = Dense(units=num_classes, activation=tf.nn.softmax)(x)
 
-    def call(self, inputs):
-        x = self.lstm1(inputs)
-        x = self.lstm2(x)
-        x = self.dense(x)
-        return x
+    return Model(inputs, x)
 
 
-class AdditionalDense(tf.keras.Model):
-    def __init__(self, num_classes=45):
-        super().__init__()
-        self.lstm = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))
-        self.dense1 = Dense(units=64, activation='relu')
-        self.dense2 = Dense(units=num_classes, activation=tf.nn.softmax)
+def additionalLSTM(input_shape=(200, 50), num_classes=45):
+    inputs = Input(input_shape)
+    x = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))(inputs)
+    x = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))(x)
+    x = Dense(units=num_classes, activation=tf.nn.softmax)(x)
 
-    def call(self, inputs):
-        x = self.lstm(inputs)
-        x = self.dense1(x)
-        x = self.dense2(x)
-        return x
+    return Model(inputs, x)
 
 
-class GRUModel(tf.keras.Model):
-    def __init__(self, num_classes=45):
-        super().__init__()
-        self.gru = GRU(units=64, activation='relu', return_sequences=True)
-        self.dense = Dense(units=num_classes, activation=tf.nn.softmax)
+def additionalDense(input_shape=(200, 50), num_classes=45):
+    inputs = Input(input_shape)
+    x = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))(inputs)
+    x = Dense(units=64, activation=tf.nn.softmax)(x)
+    x = Dense(units=num_classes, activation=tf.nn.softmax)(x)
 
-    def call(self, inputs):
-        x = self.gru(inputs)
-        x = self.dense(x)
-        return x
+    return Model(inputs, x)
