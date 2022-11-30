@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 from keras.callbacks import History
 
 
@@ -16,3 +17,18 @@ class MyHistory(History):
     def on_epoch_end(self, epoch, logs=None):
         super().on_epoch_end(epoch, logs)
         np.save(self.history_path, self.history)
+
+
+def plot_history(history):
+    """Plot training history."""
+    plt.plot(history.history['val_loss'], 'o-', label='Validation')
+    plt.plot(history.history['loss'], 'o-', label='Training')
+    plt.yscale('log')
+    
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+
+    plt.legend()
+
+    plt.tight_layout(pad=0.4)
+    plt.show()
