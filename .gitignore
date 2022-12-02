@@ -1,6 +1,7 @@
 .vscode
 Datasets
 weights
+phrase_examples.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
