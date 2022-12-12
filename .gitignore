@@ -2,6 +2,7 @@
 Datasets
 weights
 phrase_examples.csv
+*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
