@@ -64,7 +64,7 @@ def baselineLSTM(embedding_func, input_shape=(None,), num_classes=45):
     inputs = Input(input_shape)
     x = embedding_func(inputs, input_length=input_shape[0])
 
-    x = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))(x)
+    x = Bidirectional(LSTM(units=64, activation='tanh', return_sequences=True))(x)
     x = Dense(units=num_classes, activation=tf.nn.softmax)(x)
 
     return Model(inputs, x)
@@ -74,7 +74,7 @@ def GRUModel(embedding_func, input_shape=(None,), num_classes=45):
     inputs = Input(input_shape)
     x = embedding_func(inputs, input_length=input_shape[0])
 
-    x = GRU(units=64, activation='relu', return_sequences=True)(x)
+    x = GRU(units=64, activation='tanh', return_sequences=True)(x)
     x = Dense(units=num_classes, activation=tf.nn.softmax)(x)
 
     return Model(inputs, x)
